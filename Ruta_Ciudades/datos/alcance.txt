@@ -1,0 +1,35 @@
+=== Alcance desde armenia ===
+Paso 0: armenia
+Paso 1: armenia, cartago, pereira
+Paso 2: armenia, cartago, manizales, pereira, santa rosa, sevilla
+Paso 3: armenia, caicedonia, cartago, chinchiná, manizales, pereira, santa rosa, sevilla
+Se estabiliza en el paso 3
+
+=== Alcance desde armenia ===
+La ciudad de destino no existe en el grafo.
+
+=== Alcance desde cartago ===
+Paso 0: cartago
+Paso 1: cartago, pereira, sevilla
+Paso 2: caicedonia, cartago, manizales, pereira, santa rosa, sevilla
+Paso 3: armenia, caicedonia, cartago, chinchiná, manizales, pereira, santa rosa, sevilla
+Se estabiliza en el paso 3
+
+=== Alcance desde armenia ===
+Paso 0: armenia
+Paso 1: armenia, cartago, pereira
+Paso 2: armenia, cartago, manizales, pereira, santa rosa, sevilla
+Paso 3: armenia, caicedonia, cartago, chinchiná, manizales, pereira, santa rosa, sevilla
+Se estabiliza en el paso 3
+
+=== Alcance desde bogota ===
+Paso 0: bogota
+Paso 1: bogota, medellin
+Se estabiliza en el paso 1
+
+=== Alcance desde pereira ===
+Paso 0: pereira
+Paso 1: manizales, pereira, santa rosa
+Paso 2: chinchiná, manizales, pereira, santa rosa
+Se estabiliza en el paso 2
+

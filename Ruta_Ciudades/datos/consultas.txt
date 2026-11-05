@@ -1,0 +1,7 @@
+# Consultas para probar el sistema
+Armenia,Manizales
+Armenia,Chinchiná
+Cartago,Manizales
+Armenia,Bogota
+Bogota,Pereira
+Pereira,Bogota

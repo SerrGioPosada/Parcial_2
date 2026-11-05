@@ -1,0 +1,32 @@
+=== armenia -> manizales ===
+Ruta 1: armenia -> cartago -> pereira -> santa rosa -> manizales (5 ciudades, 125 km)
+Ruta 2: armenia -> cartago -> pereira -> manizales (4 ciudades, 137 km)
+Ruta 3: armenia -> pereira -> santa rosa -> manizales (4 ciudades, 85 km)
+Ruta 4: armenia -> pereira -> manizales (3 ciudades, 97 km)
+
+Número de rutas: 4
+Ruta más corta: armenia -> pereira -> manizales
+Ruta de menor distancia: armenia -> pereira -> santa rosa -> manizales (85 km)
+
+=== armenia -> chinchiná ===
+La ciudad de destino no existe en el grafo.
+
+=== cartago -> manizales ===
+Ruta 1: cartago -> sevilla -> caicedonia -> armenia -> pereira -> santa rosa -> manizales (7 ciudades, 185 km)
+Ruta 2: cartago -> sevilla -> caicedonia -> armenia -> pereira -> manizales (6 ciudades, 197 km)
+Ruta 3: cartago -> pereira -> santa rosa -> manizales (4 ciudades, 65 km)
+Ruta 4: cartago -> pereira -> manizales (3 ciudades, 77 km)
+
+Número de rutas: 4
+Ruta más corta: cartago -> pereira -> manizales
+Ruta de menor distancia: cartago -> pereira -> santa rosa -> manizales (65 km)
+
+=== armenia -> bogota ===
+El destino no es alcanzable desde el origen (sin rutas).
+
+=== bogota -> pereira ===
+El destino no es alcanzable desde el origen (sin rutas).
+
+=== pereira -> bogota ===
+El destino no es alcanzable desde el origen (sin rutas).
+

@@ -13,7 +13,7 @@ defmodule Depuracion do
 
       {:error, mensaje} ->
         escribir_depuraciones(mensaje, ruta)
-        validar_tail(resto, ruta, [{:error, mensaje} | descartados])
+        validar_tail(resto, ruta, conexiones_validas, [{:error, mensaje} | descartados])
     end
   end
 

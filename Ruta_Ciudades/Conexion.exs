@@ -1,3 +1,41 @@
+defmodule Util do
+  # Normalizar la linea de texto
+
+  def normalizar_linea(linea) when not is_binary(linea) do
+    {:error, "La línea no es una cadena de texto"}
+  end
+
+  def normalizar_linea(linea) do
+    campos =
+      linea
+      |> String.trim()
+      |> String.downcase()
+      |> String.split(",")
+
+    case campos do
+      [origen, destino, distancia] ->
+        {:ok, [String.trim(origen), String.trim(destino), String.trim(distancia)]}
+
+      _ ->
+        {:error,
+         "la linea no tiene el formato correcto. Debe contener 3 campos separados por comas"}
+    end
+  end
+
+  # Parsear una cadena de texto a un number
+  def parsear_entero(cadena) when not is_binary(cadena) do
+    {:error, "El valor no es una cadena de texto"}
+  end
+
+  def parsear_entero(cadena) do
+    case Integer.parse(cadena) do
+      {numero, ""} -> {:ok, numero}
+      {_, resto} -> {:error, "La distancia contiene caracteres inválidos: #{resto}"}
+      :error -> {:error, "La distancia no es un número entero válido"}
+    end
+  end
+end
+
 defmodule Conexion do
   @enforce_keys [:origen, :destino, :distancia]
   defstruct [:origen, :destino, :distancia]
@@ -49,43 +87,5 @@ defmodule Conexion do
 
   def nuevo({:ok, [origen, destino, distancia]}) do
     {:ok, %__MODULE__{origen: origen, destino: destino, distancia: distancia}}
-  end
-end
-
-defmodule Util do
-  # Normalizar la linea de texto
-
-  def normalizar_linea(linea) when not is_binary(linea) do
-    {:error, "La línea no es una cadena de texto"}
-  end
-
-  def normalizar_linea(linea) do
-    campos =
-      linea
-      |> String.trim()
-      |> String.downcase()
-      |> String.split(",")
-
-    case campos do
-      [origen, destino, distancia] ->
-        {:ok, [String.trim(origen), String.trim(destino), String.trim(distancia)]}
-
-      _ ->
-        {:error,
-         "la linea no tiene el formato correcto. Debe contener 3 campos separados por comas"}
-    end
-  end
-
-  # Parsear una cadena de texto a un number
-  def parsear_entero(cadena) when not is_binary(cadena) do
-    {:error, "El valor no es una cadena de texto"}
-  end
-
-  def parsear_entero(cadena) do
-    case Integer.parse(cadena) do
-      {numero, ""} -> {:ok, numero}
-      {_, resto} -> {:error, "La distancia contiene caracteres inválidos: #{resto}"}
-      :error -> {:error, "La distancia no es un número entero válido"}
-    end
   end
 end

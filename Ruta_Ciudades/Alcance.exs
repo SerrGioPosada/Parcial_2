@@ -36,7 +36,7 @@ defmodule Alcance do
   end
 
   defp escribir_alcance(pasos_lista, origen, ruta) do
-    encabezado = "=== Alcance desde #{origen} ===\n\n"
+    encabezado = "=== Alcance desde #{origen} ===\n"
 
     lineas_pasos =
       pasos_lista
@@ -48,10 +48,9 @@ defmodule Alcance do
       |> Enum.join("\n")
 
     paso_estabilizacion = length(pasos_lista) - 1
-    estabilizacion = "\nSe estabiliza en el paso #{paso_estabilizacion}\n"
+    estabilizacion = "\nSe estabiliza en el paso #{paso_estabilizacion}\n\n"
 
     contenido = encabezado <> lineas_pasos <> estabilizacion
-
-    File.write!(ruta, contenido)
+    File.write!(ruta, contenido, [:append])
   end
 end
