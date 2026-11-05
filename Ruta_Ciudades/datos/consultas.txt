@@ -1,4 +1,6 @@
-# Consultas para probar el sistema
+# Consultas de prueba para el Problema 1 (Rutas entre ciudades)
+# Formato: ciudad_origen, ciudad_destino
+
 Armenia,Manizales
 Armenia,Chinchiná
 Cartago,Manizales
