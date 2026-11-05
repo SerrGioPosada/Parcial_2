@@ -1,0 +1,2 @@
+Línea 17: Bogota,,100 -> La ciudad no puede estar vacía
+Línea 18: Cartago,Pereira,-10 -> La distancia no puede ser negativa

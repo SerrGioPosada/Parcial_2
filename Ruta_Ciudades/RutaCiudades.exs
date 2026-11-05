@@ -14,58 +14,72 @@ defmodule RutaCiudades do
   @rutas "datos/rutas_encontradas.txt"
 
   def main do
-    IO.puts("-> Leyendo y parseando conexiones")
-    conexiones_crudas = generar_conexiones(@conexiones, @errores)
+    verificar_archivo_entrada(@conexiones, "El archivo de conexiones no existe: #{@conexiones}")
+    verificar_archivo_entrada(@consultas, "El archivo de consultas no existe: #{@consultas}")
+
+    File.write(@errores, "")
+    File.write(@depuracion, "")
+    File.write(@alcance, "")
+    File.write(@rutas, "")
+
+    IO.puts("-> Leyendo y parseando conexiones con Streams")
+
+    conexiones_validas =
+      @conexiones
+      |> File.stream!()
+      |> Stream.map(&String.trim/1)
+      |> Stream.with_index(1)
+      |> Stream.reject(fn {linea, _indice} -> linea == "" or String.starts_with?(linea, "#") end)
+      |> Stream.map(fn {linea, indice} ->
+        case Conexion.parse(linea) do
+          {:ok, conexion} ->
+            {:ok, {conexion, indice}}
+
+          {:error, mensaje} ->
+            mensaje_error = "Línea #{indice}: #{linea} -> #{mensaje}\n"
+            File.write(@errores, mensaje_error, [:append])
+            {:error, mensaje_error}
+        end
+      end)
+      |> Stream.filter(fn
+        {:ok, _} -> true
+        {:error, _} -> false
+      end)
+      |> Stream.map(fn {:ok, data} -> data end)
 
     IO.puts("-> Depurando conexiones con recursión")
-    {:ok, conexiones_validas, _descartados} = Depuracion.validar(conexiones_crudas, @depuracion)
 
-    IO.puts("-> Construyendo el grafo")
-    grafo = generar_grafo(conexiones_validas)
+    {:ok, conexiones_depuradas, _descartados} =
+      Depuracion.validar(conexiones_validas, @depuracion)
 
-    IO.puts("-> Procesando consultas y generando archivos de salida")
+    IO.puts("-> Construyendo el grafo bidireccional")
+    grafo = generar_grafo(conexiones_depuradas)
+
+    IO.puts("-> Procesando consultas línea por línea y generando resultados")
     procesar_consultas(@consultas, grafo, @alcance, @rutas)
   end
 
-  def generar_conexiones(ruta_conexiones, ruta_errores) do
-    File.write(ruta_errores, "")
-
-    ruta_conexiones
-    |> File.stream!()
-    |> Stream.map(&String.trim/1)
-    |> Stream.with_index(1)
-    |> Stream.reject(fn {linea, _indice} -> linea == "" or String.starts_with?(linea, "#") end)
-    |> Stream.map(fn {linea, indice} ->
-      case Conexion.parse(linea) do
-        {:ok, conexion} ->
-          {:ok, {conexion, indice}}
-
-        {:error, mensaje} ->
-          mensaje_error = "Línea #{indice}: #{linea} -> #{mensaje}\n"
-          File.write(ruta_errores, mensaje_error, [:append])
-          {:error, mensaje_error}
-      end
-    end)
-    |> Stream.filter(fn
-      {:ok, _} -> true
-      {:error, _} -> false
-    end)
-    |> Stream.map(fn {:ok, data} -> data end)
-    |> Enum.to_list()
+  defp verificar_archivo_entrada(ruta, mensaje_error) do
+    if not File.exists?(ruta) do
+      IO.puts(:stderr, "Error: #{mensaje_error}")
+      System.halt(1)
+    end
   end
 
   def generar_grafo(conexiones) do
     Enum.reduce(conexiones, %{}, fn {conexion, _indice}, grafo ->
-      Map.update(grafo, conexion.origen, [{conexion.destino, conexion.distancia}], fn vecinos ->
-        [{conexion.destino, conexion.distancia} | vecinos]
+      grafo1 =
+        Map.update(grafo, conexion.origen, [{conexion.destino, conexion.distancia}], fn vecinos ->
+          [{conexion.destino, conexion.distancia} | vecinos]
+        end)
+
+      Map.update(grafo1, conexion.destino, [{conexion.origen, conexion.distancia}], fn vecinos ->
+        [{conexion.origen, conexion.distancia} | vecinos]
       end)
     end)
   end
 
   def procesar_consultas(ruta_consultas, grafo, ruta_alcance, ruta_rutas) do
-    File.write(ruta_alcance, "")
-    File.write(ruta_rutas, "")
-
     ruta_consultas
     |> File.stream!()
     |> Stream.map(&String.trim/1)
@@ -73,17 +87,10 @@ defmodule RutaCiudades do
     |> Enum.each(fn linea ->
       case String.split(linea, ",") do
         [origen, destino] ->
-          # Normalizamos a minúsculas para asegurar que coincida con el grafo
           origen_norm = origen |> String.trim() |> String.downcase()
           destino_norm = destino |> String.trim() |> String.downcase()
 
-          revisar_consulta(
-            origen_norm,
-            destino_norm,
-            grafo,
-            ruta_alcance,
-            ruta_rutas
-          )
+          revisar_consulta(origen_norm, destino_norm, grafo, ruta_alcance, ruta_rutas)
 
         _ ->
           IO.puts("Línea de consulta inválida: #{linea}")
@@ -115,11 +122,11 @@ defmodule RutaCiudades do
         {_, final_set} = Alcance.alcance(grafo, origen, destino, ruta_alcance)
 
         if not MapSet.member?(final_set, destino) do
-          File.write!(
-            ruta_rutas,
-            "=== #{origen} -> #{destino} ===\nEl destino no es alcanzable desde el origen (sin rutas).\n\n",
-            [:append]
-          )
+          texto =
+            "=== #{origen} -> #{destino} ===\nEl destino no es alcanzable desde el origen (sin rutas).\n\n"
+
+          File.write!(ruta_rutas, texto, [:append])
+          IO.puts(texto)
         else
           rutas = BuscadorRutas.buscar_rutas(origen, destino, grafo)
           escribir_reporte_rutas(origen, destino, rutas, ruta_rutas)
@@ -132,39 +139,50 @@ defmodule RutaCiudades do
       File.write!(ruta_alcance, "=== Alcance desde #{origen} ===\n#{mensaje}\n\n", [:append])
     end
 
-    File.write!(ruta_rutas, "=== #{origen} -> #{destino} ===\n#{mensaje}\n\n", [:append])
+    texto_final = "=== #{origen} -> #{destino} ===\n#{mensaje}\n\n"
+    File.write!(ruta_rutas, texto_final, [:append])
+    IO.puts(texto_final)
   end
 
   defp escribir_reporte_rutas(origen, destino, rutas, ruta_rutas) do
-    encabezado = "=== #{origen} -> #{destino} ===\n"
+    File.write!(ruta_rutas, "=== #{origen} -> #{destino} ===\n", [:append])
+    IO.puts("=== #{origen} -> #{destino} ===")
 
-    lineas_rutas =
-      rutas
-      |> Enum.with_index(1)
-      |> Enum.map(fn {r, i} ->
-        ciudades_str = Enum.join(r.ciudades, " -> ")
-        num_ciudades = length(r.ciudades)
-        "Ruta #{i}: #{ciudades_str} (#{num_ciudades} ciudades, #{r.distancia} km)"
-      end)
-      |> Enum.join("\n")
+    rutas
+    |> Enum.with_index(1)
+    |> Enum.each(fn {r, i} ->
+      ciudades_str = Enum.join(r.ciudades, " -> ")
+      num_ciudades = length(r.ciudades)
+      linea = "Ruta #{i}: #{ciudades_str} (#{num_ciudades} ciudades, #{r.distancia} km)\n"
+      File.write!(ruta_rutas, linea, [:append])
+      IO.write(linea)
+    end)
 
     num_rutas = length(rutas)
 
-    min_ciudades = Enum.min_by(rutas, &length(&1.ciudades))
-    str_mas_corta = Enum.join(min_ciudades.ciudades, " -> ")
+    min_ciudades_val = rutas |> Enum.map(&length(&1.ciudades)) |> Enum.min()
+    rutas_min_ciudades = Enum.filter(rutas, &(length(&1.ciudades) == min_ciudades_val))
 
-    min_distancia = Enum.min_by(rutas, & &1.distancia)
+    str_mas_corta =
+      rutas_min_ciudades
+      |> Enum.map(fn r -> "#{Enum.join(r.ciudades, " -> ")} (#{length(r.ciudades)} ciudades)" end)
+      |> Enum.join(" | ")
+
+    min_dist_val = rutas |> Enum.map(& &1.distancia) |> Enum.min()
+    rutas_min_dist = Enum.filter(rutas, &(&1.distancia == min_dist_val))
 
     str_menor_dist =
-      "#{Enum.join(min_distancia.ciudades, " -> ")} (#{min_distancia.distancia} km)"
+      rutas_min_dist
+      |> Enum.map(fn r -> "#{Enum.join(r.ciudades, " -> ")} (#{r.distancia} km)" end)
+      |> Enum.join(" | ")
 
     resumen =
       "\nNúmero de rutas: #{num_rutas}\n" <>
-        "Ruta más corta: #{str_mas_corta}\n" <>
-        "Ruta de menor distancia: #{str_menor_dist}\n\n"
+        "Ruta(s) más corta(s) (por ciudades): #{str_mas_corta}\n" <>
+        "Ruta(s) de menor distancia: #{str_menor_dist}\n\n"
 
-    contenido = encabezado <> lineas_rutas <> "\n" <> resumen
-    File.write!(ruta_rutas, contenido, [:append])
+    File.write!(ruta_rutas, resumen, [:append])
+    IO.puts(resumen)
   end
 end
 

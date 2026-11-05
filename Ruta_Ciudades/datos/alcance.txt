@@ -1,0 +1,45 @@
+=== Alcance desde armenia ===
+Paso 0: armenia
+Paso 1: armenia, caicedonia, cartago, pereira
+Paso 2: armenia, caicedonia, cartago, manizales, pereira, santa rosa, sevilla
+Paso 3: armenia, caicedonia, cartago, chinchiná, manizales, pereira, santa rosa, sevilla
+Paso 4: armenia, caicedonia, cartago, chinchiná, manizales, pereira, santa rosa, sevilla
+Se estabiliza en el paso 4
+
+=== Alcance desde armenia ===
+Paso 0: armenia
+Paso 1: armenia, caicedonia, cartago, pereira
+Paso 2: armenia, caicedonia, cartago, manizales, pereira, santa rosa, sevilla
+Paso 3: armenia, caicedonia, cartago, chinchiná, manizales, pereira, santa rosa, sevilla
+Paso 4: armenia, caicedonia, cartago, chinchiná, manizales, pereira, santa rosa, sevilla
+Se estabiliza en el paso 4
+
+=== Alcance desde cartago ===
+Paso 0: cartago
+Paso 1: armenia, cartago, pereira, sevilla
+Paso 2: armenia, caicedonia, cartago, manizales, pereira, santa rosa, sevilla
+Paso 3: armenia, caicedonia, cartago, chinchiná, manizales, pereira, santa rosa, sevilla
+Paso 4: armenia, caicedonia, cartago, chinchiná, manizales, pereira, santa rosa, sevilla
+Se estabiliza en el paso 4
+
+=== Alcance desde armenia ===
+Paso 0: armenia
+Paso 1: armenia, caicedonia, cartago, pereira
+Paso 2: armenia, caicedonia, cartago, manizales, pereira, santa rosa, sevilla
+Paso 3: armenia, caicedonia, cartago, chinchiná, manizales, pereira, santa rosa, sevilla
+Paso 4: armenia, caicedonia, cartago, chinchiná, manizales, pereira, santa rosa, sevilla
+Se estabiliza en el paso 4
+
+=== Alcance desde bogota ===
+Paso 0: bogota
+Paso 1: bogota, medellin
+Paso 2: bogota, medellin
+Se estabiliza en el paso 2
+
+=== Alcance desde pereira ===
+Paso 0: pereira
+Paso 1: armenia, cartago, manizales, pereira, santa rosa
+Paso 2: armenia, caicedonia, cartago, chinchiná, manizales, pereira, santa rosa, sevilla
+Paso 3: armenia, caicedonia, cartago, chinchiná, manizales, pereira, santa rosa, sevilla
+Se estabiliza en el paso 3
+

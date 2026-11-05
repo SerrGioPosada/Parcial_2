@@ -1,5 +1,4 @@
 defmodule Depuracion do
-  # Velidar y escribir las lineas depuradas
   def validar(conexiones, ruta), do: validar_tail(conexiones, ruta, [], [])
 
   def validar_tail([], _ruta, conexiones_validas, descartados) do
@@ -26,7 +25,6 @@ defmodule Depuracion do
     end
   end
 
-  # Validar que el origen y destino no sean iguales
   def validar_iguales({conexion, linea}) when conexion.origen == conexion.destino do
     {:error,
      "Linea #{linea}: #{conexion.origen}, #{conexion.destino}, #{conexion.distancia} -> conecta una ciudad consigo misma; se descarta"}
@@ -34,7 +32,6 @@ defmodule Depuracion do
 
   def validar_iguales(conexion), do: {:ok, conexion}
 
-  # Validar que no haya duplicados
   def validar_duplicados(conexion, []), do: {:ok, conexion}
 
   def validar_duplicados({conexion, linea} = conexion_actual, [{conexion2, linea2} | cola]) do

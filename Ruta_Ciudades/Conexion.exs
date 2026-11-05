@@ -1,6 +1,4 @@
 defmodule Util do
-  # Normalizar la linea de texto
-
   def normalizar_linea(linea) when not is_binary(linea) do
     {:error, "La línea no es una cadena de texto"}
   end
@@ -18,11 +16,10 @@ defmodule Util do
 
       _ ->
         {:error,
-         "la linea no tiene el formato correcto. Debe contener 3 campos separados por comas"}
+         "La línea no tiene el formato correcto. Debe contener 3 campos separados por comas"}
     end
   end
 
-  # Parsear una cadena de texto a un number
   def parsear_entero(cadena) when not is_binary(cadena) do
     {:error, "El valor no es una cadena de texto"}
   end
@@ -50,7 +47,6 @@ defmodule Conexion do
     end
   end
 
-  # Validar la linea
   def validar_parametros({:error, mensaje}), do: {:error, mensaje}
 
   def validar_parametros({:ok, [origen, destino, distancia]}) do
@@ -65,7 +61,6 @@ defmodule Conexion do
     end
   end
 
-  # Validaciones de una ciudad
   def validar_ciudad(ciudad) when not is_binary(ciudad),
     do: {:error, "La ciudad debe ser una cadena de texto"}
 
@@ -74,7 +69,6 @@ defmodule Conexion do
 
   def validar_ciudad(ciudad), do: {:ok, ciudad}
 
-  # Validaciones de la distancia
   def validar_distancia({:error, mensaje}), do: {:error, mensaje}
 
   def validar_distancia({:ok, distancia}) when distancia < 0,
@@ -82,7 +76,6 @@ defmodule Conexion do
 
   def validar_distancia({:ok, distancia}), do: {:ok, distancia}
 
-  # Crear el Struct
   def nuevo({:error, mensaje}), do: {:error, mensaje}
 
   def nuevo({:ok, [origen, destino, distancia]}) do
