@@ -26,7 +26,7 @@ defmodule Alcance do
 
     todos_los_pasos = [inicio | Enum.to_list(pasos)]
 
-    escribir_alcance(todos_los_pasos, ruta)
+    escribir_alcance(todos_los_pasos, origen, ruta)
 
     final = List.last(todos_los_pasos)
 
@@ -35,14 +35,22 @@ defmodule Alcance do
     {alcanzable?, final}
   end
 
-  defp escribir_alcance(pasos, ruta) do
-    contenido =
-      pasos
-      |> Enum.with_index()
+  defp escribir_alcance(pasos_lista, origen, ruta) do
+    encabezado = "=== Alcance desde #{origen} ===\n\n"
+
+    lineas_pasos =
+      pasos_lista
+      |> Enum.with_index(0)
       |> Enum.map(fn {conjunto, indice} ->
-        ciudades_ordenadas = conjunto |> MapSet.to_list() |> Enum.sort()
-        "Paso #{indice}: #{inspect(ciudades_ordenadas)}\n"
+        ciudades_ordenadas = conjunto |> MapSet.to_list() |> Enum.sort() |> Enum.join(", ")
+        "Paso #{indice}: #{ciudades_ordenadas}"
       end)
+      |> Enum.join("\n")
+
+    paso_estabilizacion = length(pasos_lista) - 1
+    estabilizacion = "\nSe estabiliza en el paso #{paso_estabilizacion}\n"
+
+    contenido = encabezado <> lineas_pasos <> estabilizacion
 
     File.write!(ruta, contenido)
   end
