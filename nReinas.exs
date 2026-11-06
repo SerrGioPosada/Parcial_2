@@ -21,7 +21,7 @@ defmodule NReinas do
   # caso base
   defp asegurar(_columna, [], _distancia), do: true
 
-  defp asegurar(cola, [cabeza | _cola], distancia)
+  defp asegurar(columna, [cabeza | _cola], distancia)
        when columna == cabeza or abs(columna - cabeza) == distancia + 1, do: false
 
   defp asegurar(columna, [_cabeza | cola], distancia) do
