@@ -4,7 +4,7 @@
 
 # una reina no puede compartir columna ni idagonal con ninguna reina anterior
 
-defmodule Tablero do
+defmodule NReinas do
   def ejecutar do
     generar_tamaños_errores()
     generar_archivos_reinas()
@@ -21,18 +21,25 @@ defmodule Tablero do
   # caso base
   defp asegurar(_columna, [], _distancia), do: true
 
-  defp asegurar(columna, [cabeza | cola], distancia) do
-    igual_columna = columna == cabeza
+  defp asegurar(cola, [cabeza | _cola], distancia)
+       when columna == cabeza or abs(columna - cabeza) == distancia + 1, do: false
 
-    igual_diagonal =
-      abs(columna - cabeza) == distancia + 1
-
-    if igual_columna or igual_diagonal do
-      false
-    else
-      asegurar(columna, cola, distancia + 1)
-    end
+  defp asegurar(columna, [_cabeza | cola], distancia) do
+    asegurar(columna, cola, distancia + 1)
   end
+
+  # defp asegurar(columna, [cabeza | cola], distancia) do
+  #   igual_columna = columna == cabeza
+
+  #   igual_diagonal =
+  #     abs(columna - cabeza) == distancia + 1
+
+  #   if igual_columna or igual_diagonal do
+  #     false
+  #   else
+  #     asegurar(columna, cola, distancia + 1)
+  #   end
+  #  end
 
   # funcion que encuentra las soluciones, se prueba cada columna de una fila, si es seguro, se coloca la reina y se avanza
   # a la siguiente fila
@@ -106,7 +113,12 @@ defmodule Tablero do
   end
 
   def leer_tamaños do
-    File.stream!("tamaños.txt")
+    if File.exists?("tamaños.txt") do
+      File.stream!("tamaños.txt")
+    else
+      IO.puts("No se encontro el archivo tamaños.txt")
+      []
+    end
   end
 
   def generar_archivos_reinas do
@@ -119,6 +131,7 @@ defmodule Tablero do
     end)
     |> Enum.each(fn {_numero, _linea, {:ok, n}} ->
       guardar_soluciones(n)
+      mostrar_solucion(n)
     end)
   end
 
@@ -132,7 +145,7 @@ defmodule Tablero do
 
   def validar_tamaño(linea) do
     case Integer.parse(linea) do
-      {n, ""} when n >= 0 -> {:ok, n}
+      {n, ""} when n > 0 -> {:ok, n}
       _ -> {:error, "no es un entero positivo"}
     end
   end
@@ -214,14 +227,17 @@ defmodule Tablero do
 
   def convertir_propuestas do
     leer_propuestas()
+    |> Stream.map(&String.trim/1)
+    |> Stream.filter(fn linea -> linea != "" and !String.starts_with?(linea, "#") end)
     |> Stream.map(fn linea ->
       linea
-      |> String.trim()
       |> String.split()
       |> Enum.map(fn numero -> String.to_integer(numero) end)
     end)
   end
 end
+
+NReinas.ejecutar()
 
 # Tablero.guardar_soluciones(5)
 
