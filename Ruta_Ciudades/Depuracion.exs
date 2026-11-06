@@ -2,7 +2,7 @@ defmodule Depuracion do
   def validar(conexiones, ruta), do: validar_tail(conexiones, ruta, [], [])
 
   def validar_tail([], _ruta, conexiones_validas, descartados) do
-    {:ok, Enum.reverse(conexiones_validas), Enum.reverse(descartados)}
+  {:ok, invertir(conexiones_validas), invertir(descartados)}
   end
 
   def validar_tail([conexion | resto], ruta, conexiones_validas, descartados) do
@@ -35,18 +35,18 @@ defmodule Depuracion do
   def validar_duplicados(conexion, []), do: {:ok, conexion}
 
   def validar_duplicados({conexion, linea} = conexion_actual, [{conexion2, linea2} | cola]) do
-    if es_duplicado?(conexion, conexion2) do
-      if conexion.distancia == conexion2.distancia do
-        {:error,
-         "Linea #{linea}: #{conexion.origen}, #{conexion.destino}, #{conexion.distancia} -> repetida (Linea #{linea2}); se descarta"}
-      else
-        {:error,
-         "Linea #{linea}: #{conexion.origen}, #{conexion.destino}, #{conexion.distancia} -> distancia distinta a la original de la Linea #{linea2}; se descarta"}
-      end
+  if es_duplicado?(conexion, conexion2) do
+    if conexion.distancia == conexion2.distancia do
+      {:error,
+       "Linea #{linea}: #{conexion.origen}, #{conexion.destino}, #{conexion.distancia} -> repetida (Linea #{linea2}); se descarta"}
     else
-      validar_duplicados(conexion_actual, cola)
+      {:error,
+       "Linea #{linea}: #{conexion.origen}, #{conexion.destino}, #{conexion.distancia} -> distancia distinta a la original de la Linea #{linea2}; se conserva la conexión original"}
     end
+  else
+    validar_duplicados(conexion_actual, cola)
   end
+end
 
   def es_duplicado?(conexion, conexion2) do
     (conexion.origen == conexion2.origen and conexion.destino == conexion2.destino) or
@@ -56,4 +56,15 @@ defmodule Depuracion do
   def escribir_depuraciones(mensaje, ruta) do
     File.write(ruta, mensaje <> "\n", [:append])
   end
+  defp invertir(lista) do
+  invertir(lista, [])
+end
+
+defp invertir([], acumulado) do
+  acumulado
+end
+
+defp invertir([cabeza | cola], acumulado) do
+  invertir(cola, [cabeza | acumulado])
+end
 end

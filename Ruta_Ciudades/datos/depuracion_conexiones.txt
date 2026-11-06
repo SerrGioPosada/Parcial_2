@@ -1,6 +1,6 @@
 Linea 6: pereira, armenia, 45 -> repetida (Linea 2); se descarta
 Linea 7: manizales, manizales, 0 -> conecta una ciudad consigo misma; se descarta
-Linea 8: cartago, pereira, 30 -> distancia distinta a la original de la Linea 5; se descarta
+Linea 8: cartago, pereira, 30 -> distancia distinta a la original de la Linea 5; se conserva la conexión original
 Linea 10: chinchiná, manizales, 20 -> repetida (Linea 9); se descarta
-Linea 11: pereira, cartago, 100 -> distancia distinta a la original de la Linea 5; se descarta
-Linea 16: bogota, medellin, 420 -> distancia distinta a la original de la Linea 15; se descarta
+Linea 11: pereira, cartago, 100 -> distancia distinta a la original de la Linea 5; se conserva la conexión original
+Linea 16: bogota, medellin, 420 -> distancia distinta a la original de la Linea 15; se conserva la conexión original
