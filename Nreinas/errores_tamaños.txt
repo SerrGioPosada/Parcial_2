@@ -1,0 +1,4 @@
+linea 6: hola - no es un entero positivo
+linea 7: goku - no es un entero positivo
+linea 8: 0 - no es un entero positivo
+linea 9: -3 - no es un entero positivo
