@@ -1,0 +1,13 @@
+solucion 1:
+. Q . .
+. . . Q
+Q . . .
+. . Q .
+
+solucion 2:
+. . Q .
+Q . . .
+. . . Q
+. Q . .
+
+total de soluciones: 2

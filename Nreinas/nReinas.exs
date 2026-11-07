@@ -6,10 +6,12 @@
 
 defmodule NReinas do
   def ejecutar do
-    generar_tamaños_errores()
-    generar_archivos_reinas()
-    primera_solucion()
-  end
+  generar_tamaños_errores()
+  generar_archivos_reinas()
+  primera_solucion()
+  verificar_propuestas()
+  #generar_secuencia_reinas()
+end
 
   def posicion?(columna, reinas) do
     # se coloca una reina, luego se guarda su columna al principio de la lista
@@ -27,19 +29,6 @@ defmodule NReinas do
   defp asegurar(columna, [_cabeza | cola], distancia) do
     asegurar(columna, cola, distancia + 1)
   end
-
-  # defp asegurar(columna, [cabeza | cola], distancia) do
-  #   igual_columna = columna == cabeza
-
-  #   igual_diagonal =
-  #     abs(columna - cabeza) == distancia + 1
-
-  #   if igual_columna or igual_diagonal do
-  #     false
-  #   else
-  #     asegurar(columna, cola, distancia + 1)
-  #   end
-  #  end
 
   # funcion que encuentra las soluciones, se prueba cada columna de una fila, si es seguro, se coloca la reina y se avanza
   # a la siguiente fila
@@ -235,6 +224,254 @@ defmodule NReinas do
       |> Enum.map(fn numero -> String.to_integer(numero) end)
     end)
   end
+
+  # VALIDACION DE TABLEROS PROPUESTOS
+
+  def verificar_propuestas do
+    if File.exists?("propuestas.txt") do
+      case File.open("verificacion_reinas.txt", [:write]) do
+        {:ok, archivo} ->
+          File.stream!("propuestas.txt")
+          |> Stream.with_index(1)
+          |> Stream.map(fn {linea, numero} ->
+            {numero, String.trim(linea)}
+          end)
+          |> Stream.filter(fn {_numero, linea} ->
+            linea != "" and not String.starts_with?(linea, "#")
+          end)
+          |> Enum.each(fn {numero, linea} ->
+            resultado =
+              linea
+              |> String.split()
+              |> convertir_columnas()
+
+            mensaje =
+              case resultado do
+                {:ok, columnas} ->
+                  validar_tablero(columnas)
+
+                {:error, motivo} ->
+                  "inválida: #{motivo}"
+              end
+
+            IO.puts(archivo, "Línea #{numero}: #{linea} -> #{mensaje}")
+            IO.puts("Línea #{numero}: #{linea} -> #{mensaje}")
+          end)
+
+          File.close(archivo)
+          IO.puts("Se generó verificacion_reinas.txt")
+
+        {:error, motivo} ->
+          IO.inspect(motivo)
+      end
+    else
+      IO.puts("No se encontró el archivo propuestas.txt")
+    end
+  end
+
+  # Convierte los valores de texto a enteros mediante recursión
+
+  defp convertir_columnas(lineas) do
+    convertir_columnas(lineas, [])
+  end
+
+  defp convertir_columnas([], acumulado) do
+  {:ok, invertir_lista(acumulado)}
+end
+
+  defp convertir_columnas([numero | resto], acumulado) do
+    case Integer.parse(numero) do
+      {valor, ""} ->
+        convertir_columnas(resto, [valor | acumulado])
+
+      _ ->
+        {:error, "el valor #{numero} no es un entero"}
+    end
+  end
+
+  # Cuenta los elementos de una lista mediante recursión
+
+  defp contar_elementos([]), do: 0
+
+  defp contar_elementos([_cabeza | cola]) do
+    1 + contar_elementos(cola)
+  end
+
+  # Verifica todas las reinas del tablero
+
+ defp validar_tablero(columnas) do
+  n = contar_elementos(columnas)
+
+  errores_limites = revisar_limites(columnas, 0, n, [])
+
+  errores =
+    case errores_limites do
+      [] -> revisar_pares(columnas, 0, [])
+      _ -> errores_limites
+    end
+
+  case errores do
+    [] ->
+      "válida"
+
+    _ ->
+      "inválida: " <> unir_errores(errores)
+  end
+end
+
+  # Comprueba que ninguna columna esté fuera del tablero
+
+  defp revisar_limites([], _fila, _n, errores) do
+    invertir_lista(errores)
+  end
+
+  defp revisar_limites([columna | resto], fila, n, errores) do
+    nuevos_errores =
+      if columna < 0 or columna >= n do
+        ["la columna #{columna} de la fila #{fila} está fuera del tablero" | errores]
+      else
+        errores
+      end
+
+    revisar_limites(resto, fila + 1, n, nuevos_errores)
+  end
+
+  # Compara cada reina con las que vienen después
+
+  defp revisar_pares([], _fila, errores) do
+    invertir_lista(errores)
+  end
+
+  defp revisar_pares([columna | resto], fila, errores) do
+    nuevos_errores =
+      comparar_reinas(columna, fila, resto, fila + 1, errores)
+
+    revisar_pares(resto, fila + 1, nuevos_errores)
+  end
+
+  # Detecta conflictos de columna y diagonal
+
+  defp comparar_reinas(_columna, _fila, [], _otra_fila, errores) do
+    errores
+  end
+
+  defp comparar_reinas(columna, fila, [otra | resto], otra_fila, errores) do
+    misma_columna = columna == otra
+
+    misma_diagonal =
+      abs(columna - otra) == abs(fila - otra_fila)
+
+    nuevos_errores =
+      cond do
+        misma_columna ->
+          ["reinas {#{fila},#{columna}} y {#{otra_fila},#{otra}} en la misma columna" | errores]
+
+        misma_diagonal ->
+          ["reinas {#{fila},#{columna}} y {#{otra_fila},#{otra}} en la misma diagonal" | errores]
+
+        true ->
+          errores
+      end
+
+    comparar_reinas(columna, fila, resto, otra_fila + 1, nuevos_errores)
+  end
+
+  # Invierte una lista mediante recursión
+
+  defp invertir_lista(lista) do
+    invertir_lista(lista, [])
+  end
+
+  defp invertir_lista([], acumulado), do: acumulado
+
+  defp invertir_lista([cabeza | cola], acumulado) do
+    invertir_lista(cola, [cabeza | acumulado])
+  end
+
+  # Une los mensajes de error
+
+  defp unir_errores([ultimo]), do: ultimo
+
+  defp unir_errores([cabeza | resto]) do
+    cabeza <> "; " <> unir_errores(resto)
+  end
+
+  # SECUENCIA INFINITA DE N REINAS
+
+  def generar_secuencia_reinas do
+    case File.open("secuencia_reinas.csv", [:write]) do
+      {:ok, archivo} ->
+        IO.puts(archivo, "n;soluciones;tiempo_ms")
+
+        Stream.iterate(1, fn n -> n + 1 end)
+        |> Stream.map(fn n ->
+          {tiempo, soluciones} =
+            :timer.tc(fn ->
+              Enum.count(encontrar(n))
+            end)
+
+          tiempo_ms = div(tiempo, 1000)
+
+          {n, soluciones, tiempo_ms}
+        end)
+        |> Stream.take_while(fn {_n, _soluciones, tiempo} ->
+          tiempo < 10_000
+        end)
+        |> Enum.each(fn {n, soluciones, tiempo} ->
+          IO.puts(archivo, "#{n};#{soluciones};#{tiempo}")
+
+          IO.puts(
+            "N = #{n}: #{soluciones} soluciones, #{tiempo} ms"
+          )
+
+          comparar_oeis(n, soluciones)
+        end)
+
+        File.close(archivo)
+        IO.puts("Se generó secuencia_reinas.csv")
+
+      {:error, motivo} ->
+        IO.inspect(motivo)
+    end
+  end
+
+  # Comparación con la secuencia OEIS A000170
+
+  defp comparar_oeis(n, soluciones) do
+    esperado =
+      case n do
+        1 -> 1
+        2 -> 0
+        3 -> 0
+        4 -> 2
+        5 -> 10
+        6 -> 4
+        7 -> 40
+        8 -> 92
+        9 -> 352
+        10 -> 724
+        11 -> 2680
+        12 -> 14200
+        13 -> 73712
+        14 -> 365596
+        15 -> 2279184
+        _ -> nil
+      end
+
+    case esperado do
+      nil ->
+        IO.puts("N = #{n}: sin comparación precargada")
+
+      valor ->
+        if soluciones == valor do
+          IO.puts("Coincide con OEIS A000170")
+        else
+          IO.puts("No coincide con OEIS: se esperaban #{valor}")
+        end
+    end
+  end
+
+
 end
 
 NReinas.ejecutar()

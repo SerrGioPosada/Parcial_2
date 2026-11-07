@@ -1,0 +1,71 @@
+solucion 1:
+Q . . . .
+. . Q . .
+. . . . Q
+. Q . . .
+. . . Q .
+
+solucion 2:
+Q . . . .
+. . . Q .
+. Q . . .
+. . . . Q
+. . Q . .
+
+solucion 3:
+. Q . . .
+. . . Q .
+Q . . . .
+. . Q . .
+. . . . Q
+
+solucion 4:
+. Q . . .
+. . . . Q
+. . Q . .
+Q . . . .
+. . . Q .
+
+solucion 5:
+. . Q . .
+Q . . . .
+. . . Q .
+. Q . . .
+. . . . Q
+
+solucion 6:
+. . Q . .
+. . . . Q
+. Q . . .
+. . . Q .
+Q . . . .
+
+solucion 7:
+. . . Q .
+Q . . . .
+. . Q . .
+. . . . Q
+. Q . . .
+
+solucion 8:
+. . . Q .
+. Q . . .
+. . . . Q
+. . Q . .
+Q . . . .
+
+solucion 9:
+. . . . Q
+. Q . . .
+. . . Q .
+Q . . . .
+. . Q . .
+
+solucion 10:
+. . . . Q
+. . Q . .
+Q . . . .
+. . . Q .
+. Q . . .
+
+total de soluciones: 10
