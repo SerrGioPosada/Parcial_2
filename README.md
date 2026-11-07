@@ -6,7 +6,9 @@ Soluciones en **Elixir** de dos de los problemas del Parcial 2:
 - **Problema 4:** N reinas.
 
 **Integrantes:** Sergio Posada Garcia
+
                  Jhonatan Perilla Betancur
+                 
                  Sara Benjumea Gallego
 **Repositorio:** (https://github.com/SerrGioPosada/Parcial_2.git)
 
