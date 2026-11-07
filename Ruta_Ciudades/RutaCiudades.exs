@@ -1,4 +1,3 @@
-Code.require_file("../Util.exs", __DIR__)
 Code.require_file("Conexion.exs", __DIR__)
 Code.require_file("Depuracion.exs", __DIR__)
 Code.require_file("Alcance.exs", __DIR__)
@@ -46,6 +45,7 @@ defmodule RutaCiudades do
         {:error, _} -> false
       end)
       |> Stream.map(fn {:ok, data} -> data end)
+      |> Enum.to_list()
 
     IO.puts("-> Depurando conexiones con recursión")
 
@@ -144,46 +144,48 @@ defmodule RutaCiudades do
     IO.puts(texto_final)
   end
 
-  defp escribir_reporte_rutas(origen, destino, rutas, ruta_rutas) do
-    File.write!(ruta_rutas, "=== #{origen} -> #{destino} ===\n", [:append])
-    IO.puts("=== #{origen} -> #{destino} ===")
 
-    rutas
-    |> Enum.with_index(1)
-    |> Enum.each(fn {r, i} ->
-      ciudades_str = Enum.join(r.ciudades, " -> ")
-      num_ciudades = length(r.ciudades)
-      linea = "Ruta #{i}: #{ciudades_str} (#{num_ciudades} ciudades, #{r.distancia} km)\n"
-      File.write!(ruta_rutas, linea, [:append])
-      IO.write(linea)
-    end)
+defp escribir_reporte_rutas(origen, destino, rutas, ruta_rutas) do
+  File.write!(ruta_rutas, "=== #{origen} -> #{destino} ===\n", [:append])
+  IO.puts("=== #{origen} -> #{destino} ===")
 
-    num_rutas = length(rutas)
+  rutas
+  |> Enum.with_index(1)
+  |> Enum.each(fn {r, i} ->
+    ciudades_str = Enum.join(r.ciudades, " -> ")
+    num_ciudades = length(r.ciudades)
+    linea = "Ruta #{i}: #{ciudades_str} (#{num_ciudades} ciudades, #{r.distancia} km)\n"
+    File.write!(ruta_rutas, linea, [:append])
+    IO.write(linea)
+  end)
 
-    min_ciudades_val = rutas |> Enum.map(&length(&1.ciudades)) |> Enum.min()
-    rutas_min_ciudades = Enum.filter(rutas, &(length(&1.ciudades) == min_ciudades_val))
+  num_rutas = length(rutas)
 
-    str_mas_corta =
-      rutas_min_ciudades
-      |> Enum.map(fn r -> "#{Enum.join(r.ciudades, " -> ")} (#{length(r.ciudades)} ciudades)" end)
-      |> Enum.join(" | ")
+  min_ciudades_val = rutas |> Enum.map(&length(&1.ciudades)) |> Enum.min()
+  rutas_min_ciudades = Enum.filter(rutas, &(length(&1.ciudades) == min_ciudades_val))
 
-    min_dist_val = rutas |> Enum.map(& &1.distancia) |> Enum.min()
-    rutas_min_dist = Enum.filter(rutas, &(&1.distancia == min_dist_val))
+  str_mas_corta =
+    rutas_min_ciudades
+    |> Enum.map(fn r -> "#{Enum.join(r.ciudades, " -> ")} (#{length(r.ciudades)} ciudades)" end)
+    |> Enum.join(" | ")
 
-    str_menor_dist =
-      rutas_min_dist
-      |> Enum.map(fn r -> "#{Enum.join(r.ciudades, " -> ")} (#{r.distancia} km)" end)
-      |> Enum.join(" | ")
+  min_dist_val = rutas |> Enum.map(& &1.distancia) |> Enum.min()
+  rutas_min_dist = Enum.filter(rutas, &(&1.distancia == min_dist_val))
 
-    resumen =
-      "\nNúmero de rutas: #{num_rutas}\n" <>
-        "Ruta(s) más corta(s) (por ciudades): #{str_mas_corta}\n" <>
-        "Ruta(s) de menor distancia: #{str_menor_dist}\n\n"
+  str_menor_dist =
+    rutas_min_dist
+    |> Enum.map(fn r -> "#{Enum.join(r.ciudades, " -> ")} (#{r.distancia} km)" end)
+    |> Enum.join(" | ")
 
-    File.write!(ruta_rutas, resumen, [:append])
-    IO.puts(resumen)
-  end
+  File.write!(ruta_rutas, "\nNúmero de rutas: #{num_rutas}\n", [:append])
+  File.write!(ruta_rutas, "Ruta(s) más corta(s) (por ciudades): #{str_mas_corta}\n", [:append])
+  File.write!(ruta_rutas, "Ruta(s) de menor distancia: #{str_menor_dist}\n\n", [:append])
+
+  IO.puts("\nNúmero de rutas: #{num_rutas}")
+  IO.puts("Ruta(s) más corta(s) (por ciudades): #{str_mas_corta}")
+  IO.puts("Ruta(s) de menor distancia: #{str_menor_dist}\n")
+end
+
 end
 
 RutaCiudades.main()
