@@ -5,10 +5,10 @@ Soluciones en **Elixir** de dos de los problemas del Parcial 2:
 - **Problema 1:** Rutas entre ciudades.
 - **Problema 4:** N reinas.
 
-**Integrantes:** Sergio Posada Garcia
+**Integrantes:** 
 
                  Jhonatan Perilla Betancur
-                 
+                 Sergio Posada Garcia
                  Sara Benjumea Gallego
 **Repositorio:** (https://github.com/SerrGioPosada/Parcial_2.git)
 
